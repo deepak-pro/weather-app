@@ -10,7 +10,10 @@ import {
   ScrollView,
   StatusBar,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
+
+import { FlatGrid } from "react-native-super-grid";
 
 import { API_KEY } from "../constants";
 
@@ -22,7 +25,19 @@ function getWeatherData() {
   return fetch(link).then((data) => data.json());
 }
 
+function generateGridData(data) {
+  let gridData = [];
+  gridData.push(data.wind.speed);
+  gridData.push(data.main.pressure);
+  gridData.push(data.main.humidity);
+  gridData.push(data.visibility + " m");
+  gridData.push(data.main.feels_like);
+  gridData.push(data.clouds.all);
+  return gridData;
+}
+
 export default function HomeScreen() {
+  const [gdata, setGdata] = useState([]);
   const [data, setData] = useState({
     coord: { lon: 75.8333, lat: 22.7179 },
     weather: [{ id: 721, main: "Haze", description: "haze", icon: "50d" }],
@@ -52,16 +67,18 @@ export default function HomeScreen() {
     cod: 200,
   });
 
-  //   useEffect(() => {
-  //     console.log("I am here");
-  //     getWeatherData().then((data) => setData(data));
-  //   }, []);
+  useEffect(() => {
+    console.log("I am here");
+    //getWeatherData().then((data) => setData(data));
+    const gridData = generateGridData(data);
+    setGdata(gridData);
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.upperview}>
         <Text style={{ fontSize: 30 }}>{data.name}</Text>
-        <Text style={{ fontSize: 60 }}> 24&deg;</Text>
+        <Text style={{ fontSize: 60 }}> {data.main.temp}&deg;</Text>
         <Image
           source={{
             uri: "https://openweathermap.org/img/wn/50d@2x.png",
@@ -69,12 +86,57 @@ export default function HomeScreen() {
           style={{ height: 50, width: 50 }}
           resizeMode="cover"
         />
-        <Text style={{ fontSize: 20 }}>Haze</Text>
+        <Text style={{ fontSize: 20 }}>{data.weather[0].main}</Text>
         <Text style={{ fontSize: 15, margin: 10 }}>
-          High: 26&deg; Low: 14&deg;
+          High: {data.main.temp_max}&deg; {data.main.temp_min}: 14&deg;
         </Text>
       </View>
-      <View style={styles.lowerview}></View>
+      <View style={styles.lowerview}>
+        {/* <FlatGrid
+          style={styles.gridView}
+          itemDimension={130}
+          data={gdata}
+          spacing={10}
+          renderItem={({ item }) => (
+            <View style={styles.itemContainer}>
+              <Text style={{ fontSize: 30 }}>{item}</Text>
+            </View>
+          )}
+        /> */}
+
+        <ScrollView>
+          <View style={styles.lowerrow}>
+            <View style={styles.loweritem}>
+              <Text style={styles.lowerviewtext}> Wind Speed </Text>
+              <Text style={styles.lowerviewtext}> {data.wind.speed} </Text>
+            </View>
+            <View style={styles.loweritem}>
+              <Text style={styles.lowerviewtext}> Pressure </Text>
+              <Text style={styles.lowerviewtext}> {data.main.pressure} </Text>
+            </View>
+          </View>
+          <View style={styles.lowerrow}>
+            <View style={styles.loweritem}>
+              <Text style={styles.lowerviewtext}> Humidity </Text>
+              <Text style={styles.lowerviewtext}> {data.main.humidity} </Text>
+            </View>
+            <View style={styles.loweritem}>
+              <Text style={styles.lowerviewtext}> Visibility </Text>
+              <Text style={styles.lowerviewtext}> {data.visibility} </Text>
+            </View>
+          </View>
+          <View style={styles.lowerrow}>
+            <View style={styles.loweritem}>
+              <Text style={styles.lowerviewtext}> Feels Like </Text>
+              <Text style={styles.lowerviewtext}> {data.main.feels_like} </Text>
+            </View>
+            <View style={styles.loweritem}>
+              <Text style={styles.lowerviewtext}> Clouds </Text>
+              <Text style={styles.lowerviewtext}> {data.clouds.all} </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -88,15 +150,49 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
   },
   upperview: {
-    backgroundColor: "red",
+    backgroundColor: "white",
     flex: 0.4,
     alignItems: "center",
     justifyContent: "flex-end",
   },
   lowerview: {
-    backgroundColor: "blue",
+    backgroundColor: "white",
     flex: 0.6,
     alignItems: "center",
+    justifyContent: "flex-start",
+  },
+  lowerrow: {
+    flexDirection: "row",
+    margin: 10,
+  },
+  loweritem: {
+    width: Dimensions.get("window").width / 2 - 30,
+    height: Dimensions.get("window").width / 2 - 30,
+    backgroundColor: "white",
+    margin: 10,
+    alignItems: "center",
     justifyContent: "center",
+    borderRadius: 20,
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    shadowOpacity: 0.26,
+    elevation: 8,
+  },
+  lowerviewtext: {
+    fontSize: 20,
+    marginVertical: 10,
+  },
+  gridView: {
+    marginTop: 10,
+    flex: 1,
+  },
+  itemContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 5,
+    padding: 10,
+    height: 150,
+    backgroundColor: "grey",
   },
 });
