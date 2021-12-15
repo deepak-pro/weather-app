@@ -11,6 +11,7 @@ import {
   StatusBar,
   SafeAreaView,
   Dimensions,
+  Alert,
 } from "react-native";
 
 import { FlatGrid } from "react-native-super-grid";
@@ -68,6 +69,38 @@ export default function HomeScreen() {
       >
         <SafeAreaView style={{ flex: 1 }}>
           <View style={styles.upperview}>
+            <View
+              style={{
+                position: "absolute",
+                left: 10,
+                top: 10,
+                width: 80,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button color="white" title="Refresh" />
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                right: 10,
+                top: 10,
+                width: 80,
+                height: 50,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                color="white"
+                title="Search"
+                onPress={() => {
+                  Alert.prompt("Enter the name of a city");
+                }}
+              />
+            </View>
             <Text style={[{ fontSize: 30 }, styles.whitetext]}>
               {data.name}
             </Text>
@@ -174,7 +207,7 @@ const styles = StyleSheet.create({
   loweritem: {
     width: Dimensions.get("window").width / 2 - 30,
     height: Dimensions.get("window").width / 2 - 30,
-    backgroundColor: "white",
+    backgroundColor: "rgba(255,255,255,0.1)",
     margin: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -184,10 +217,13 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     shadowOpacity: 0.26,
     elevation: 8,
+    borderColor: "white",
+    borderWidth: 1,
   },
   lowerviewtext: {
     fontSize: 20,
     marginVertical: 10,
+    color: "white",
   },
   gridView: {
     marginTop: 10,
