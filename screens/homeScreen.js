@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
-  KeyboardAvoidingView,
   Image,
   ImageBackground,
   Button,
@@ -13,117 +12,117 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
+import { get } from "react-native/Libraries/Utilities/PixelRatio";
 
-import { FlatGrid } from "react-native-super-grid";
-
-import { API_KEY } from "../constants";
+import { API_KEY, testData } from "../constants";
 
 const image = require("../assets/background.png");
-const link =
-  "https://api.openweathermap.org/data/2.5/weather?units=metric&q=indore&appid=27506ebae89d5ad0189eaa55b3215086";
-
-function getWeatherData() {
-  return fetch(link).then((data) => data.json());
-}
+// https://api.openweathermap.org/data/2.5/weather?units=metric&q=indore&appid=27506ebae89d5ad0189eaa55b3215086
+const linkPrefix =
+  "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+const linkSuffix = "&appid=27506ebae89d5ad0189eaa55b3215086";
 
 export default function HomeScreen() {
-  const [data, setData] = useState({
-    coord: { lon: 75.8333, lat: 22.7179 },
-    weather: [{ id: 721, main: "Haze", description: "haze", icon: "50d" }],
-    base: "stations",
-    main: {
-      temp: 16.1,
-      feels_like: 16.06,
-      temp_min: 16.1,
-      temp_max: 16.1,
-      pressure: 1019,
-      humidity: 88,
-    },
-    visibility: 1000,
-    wind: { speed: 0, deg: 0 },
-    clouds: { all: 40 },
-    dt: 1639540766,
-    sys: {
-      type: 1,
-      id: 9067,
-      country: "IN",
-      sunrise: 1639531760,
-      sunset: 1639570459,
-    },
-    timezone: 19800,
-    id: 1269743,
-    name: "Indore",
-    cod: 200,
-  });
+  const [iconLink, setIconLink] = useState("https://google.com");
+  const [city, setCity] = useState("indore");
+  const [data, setData] = useState(testData);
+
+  const getWeatherData = () => {
+    return fetch(linkPrefix + city + linkSuffix).then((data) => data.json());
+  };
+
+  const refresh = () => {
+    getWeatherData().then((data) => {
+      if (data.cod === 200) {
+        setData(data);
+      } else {
+        setCity("Indore");
+        Alert.alert("City not found");
+      }
+    });
+  };
 
   useEffect(() => {
-    console.log("I am here");
-    //getWeatherData().then((data) => setData(data));
-  }, []);
+    refresh();
+  }, [city]);
 
   return (
     <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
       <ImageBackground
         source={require("../assets/background.png")}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={{ flex: 1 }}>
-          <View style={styles.upperview}>
-            <View
-              style={{
-                position: "absolute",
-                left: 10,
-                top: 10,
-                width: 80,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Button color="white" title="Refresh" />
-            </View>
-            <View
-              style={{
-                position: "absolute",
-                right: 10,
-                top: 10,
-                width: 80,
-                height: 50,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                color="white"
-                title="Search"
-                onPress={() => {
-                  Alert.prompt("Enter the name of a city");
+          <ScrollView>
+            <View style={styles.upperview}>
+              <View
+                style={{
+                  position: "absolute",
+                  left: 10,
+                  top: 10,
+                  width: 80,
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
+              >
+                <Button
+                  color="white"
+                  title="Refresh"
+                  onPress={() => {
+                    refresh();
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: 10,
+                  width: 80,
+                  height: 50,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  color="white"
+                  title="Search"
+                  onPress={() => {
+                    Alert.prompt("title", "message", (cityText) => {
+                      if (cityText) {
+                        setCity(cityText);
+                      }
+                    });
+                  }}
+                />
+              </View>
+              <Text style={[{ fontSize: 30 }, styles.whitetext]}>
+                {data.name}
+              </Text>
+              <Text style={[{ fontSize: 60 }, styles.whitetext]}>
+                {" "}
+                {data.main.temp}&deg;
+              </Text>
+              <Image
+                source={{
+                  uri:
+                    "https://openweathermap.org/img/wn/" +
+                    data.weather[0].icon +
+                    "@2x.png",
+                }}
+                style={{ height: 50, width: 50, tintColor: "white" }}
+                resizeMode="cover"
               />
+              <Text style={[{ fontSize: 20 }, styles.whitetext]}>
+                {data.weather[0].main}
+              </Text>
+              <Text style={[{ fontSize: 15, margin: 10 }, styles.whitetext]}>
+                High: {data.main.temp_max}&deg; Low: {data.main.temp_min}&deg;
+              </Text>
             </View>
-            <Text style={[{ fontSize: 30 }, styles.whitetext]}>
-              {data.name}
-            </Text>
-            <Text style={[{ fontSize: 60 }, styles.whitetext]}>
-              {" "}
-              {data.main.temp}&deg;
-            </Text>
-            <Image
-              source={{
-                uri: "https://openweathermap.org/img/wn/" + "03d" + "@2x.png",
-              }}
-              style={{ height: 50, width: 50 }}
-              resizeMode="cover"
-            />
-            <Text style={[{ fontSize: 20 }, styles.whitetext]}>
-              {data.weather[0].main}
-            </Text>
-            <Text style={[{ fontSize: 15, margin: 10 }, styles.whitetext]}>
-              High: {data.main.temp_max}&deg; Low: {data.main.temp_min}&deg;
-            </Text>
-          </View>
-          <View style={styles.lowerview}>
-            <ScrollView>
+            <View style={styles.lowerview}>
               <View style={styles.lowerrow}>
                 <View style={styles.loweritem}>
                   <Text style={styles.lowerviewtext}> Wind Speed </Text>
@@ -169,8 +168,8 @@ export default function HomeScreen() {
                   <Text style={styles.lowerviewtext}> {data.clouds.all}% </Text>
                 </View>
               </View>
-            </ScrollView>
-          </View>
+            </View>
+          </ScrollView>
         </SafeAreaView>
       </ImageBackground>
     </View>
@@ -190,6 +189,7 @@ const styles = StyleSheet.create({
     flex: 0.4,
     alignItems: "center",
     justifyContent: "center",
+    paddingTop: 50,
   },
   lowerview: {
     backgroundColor: "transparent",
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
   loweritem: {
     width: Dimensions.get("window").width / 2 - 30,
     height: Dimensions.get("window").width / 2 - 30,
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(0,60,130,0.3)",
     margin: 10,
     alignItems: "center",
     justifyContent: "center",
