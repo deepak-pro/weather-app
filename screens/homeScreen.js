@@ -12,15 +12,12 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import { get } from "react-native/Libraries/Utilities/PixelRatio";
-
-import { API_KEY, testData } from "../constants";
 
 const image = require("../assets/background.png");
 // https://api.openweathermap.org/data/2.5/weather?units=metric&q=indore&appid=27506ebae89d5ad0189eaa55b3215086
 const linkPrefix =
   "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
-const linkSuffix = "&appid=27506ebae89d5ad0189eaa55b3215086";
+const linkSuffix = "&appid=<apikey>";
 
 export default function HomeScreen() {
   const [iconLink, setIconLink] = useState("https://google.com");
@@ -65,6 +62,7 @@ export default function HomeScreen() {
                   height: 50,
                   justifyContent: "center",
                   alignItems: "center",
+                  backgroundColor: "transparent",
                 }}
               >
                 <Button
@@ -90,7 +88,7 @@ export default function HomeScreen() {
                   color="white"
                   title="Search"
                   onPress={() => {
-                    Alert.prompt("title", "message", (cityText) => {
+                    Alert.prompt("Enter city name", "", (cityText) => {
                       if (cityText) {
                         setCity(cityText);
                       }
@@ -212,13 +210,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 20,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    shadowOpacity: 0.26,
-    elevation: 8,
     borderColor: "white",
-    borderWidth: 1,
+    borderWidth: 0.5,
   },
   lowerviewtext: {
     fontSize: 20,
