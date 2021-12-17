@@ -65,6 +65,7 @@ export default function HomeScreen() {
                   height: 50,
                   justifyContent: "center",
                   alignItems: "center",
+                  backgroundColor: "transparent",
                 }}
               >
                 <Button
@@ -90,7 +91,7 @@ export default function HomeScreen() {
                   color="white"
                   title="Search"
                   onPress={() => {
-                    Alert.prompt("title", "message", (cityText) => {
+                    Alert.prompt("Enter city name", "", (cityText) => {
                       if (cityText) {
                         setCity(cityText);
                       }
@@ -212,13 +213,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 20,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    shadowOpacity: 0.26,
-    elevation: 8,
     borderColor: "white",
-    borderWidth: 1,
+    borderWidth: 0.5,
   },
   lowerviewtext: {
     fontSize: 20,
