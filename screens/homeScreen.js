@@ -14,7 +14,6 @@ import {
 } from "react-native";
 
 const image = require("../assets/background.png");
-// https://api.openweathermap.org/data/2.5/weather?units=metric&q=indore&appid=27506ebae89d5ad0189eaa55b3215086
 const linkPrefix =
   "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
 const linkSuffix = "&appid=<apikey>";
